@@ -1,0 +1,27 @@
+#!/bin/bash
+FILES="$@"
+for f in $FILES
+do
+#  echo "** ${f}"
+        # if .zip file exists do tests 
+	if [ -f ${f} ]
+	then
+		zip -T ${f} >/dev/null 
+		if [ $? -eq 0 ]
+		then   #zip -T works, now see if zip -F works for 100% confidence
+			zip -F ${f} --out dummy.zip >/dev/null
+			if [ $? -ne 0 ]
+			then
+  				echo "Failure: zip -T worked, but zip -F failed" 
+				exit 1
+			else
+				echo "${f} is OK"
+			fi
+		else
+  			echo "Failure: zip -T (${f}) failed" 
+  			exit 1
+		fi
+	fi
+rm -f dummy.zip 2>/dev/null
+done
+
